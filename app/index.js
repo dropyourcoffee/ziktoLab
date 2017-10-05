@@ -34,11 +34,8 @@ noble.on('discover', async function(peripheral) {
   	const rwCharacteristics = _.filter(chars,{'uuid':ziktoWalk.Gatt.serviceMain.readWrite.uuid});
   	console.log(rwCharacteristics);
 
-  	const findme = new Buffer(20);
-  	findme.writeUInt8(0x70,0);
-  	findme.writeUInt8(0x01,1);
-  	findme.writeUInt8(0x03,2);
-  	console.log(findme);
+  	console.log(ziktoWalk.Protocol);
+  	const findme = ziktoWalk.Protocol.FindMe;	
   	noble.write(peripheral.uuid, ziktoWalk.Gatt.serviceMain.uuid, ziktoWalk.Gatt.serviceMain.readWrite.uuid,findme,false)
 
 
@@ -47,4 +44,3 @@ noble.on('discover', async function(peripheral) {
 });
 
 
-noble.on
