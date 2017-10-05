@@ -1,21 +1,31 @@
 let _exports = module.exports = {};
 
 _exports.ziktoWalk = {
-	serviceMain : {
-		uuid : '00000f0f01212efde1523785feabcd123',
-		readWrite : {
-			uuid: '0000f0f11212efde1523785eabcd123'
-		},
-		notify : {
-			uuid: '0000f0f21212efde1523785eabcd123'
-		}
+	Gatt : {
+		serviceMain : {
+			uuid : '0000f0f01212efde1523785feabcd123',
 
-	},
-	serviceDevInfo : {
-		uuid : '180a',
-		serialNo:{
-			uuid: '2a25',
+			readWrite : {
+				uuid: '0000f0f11212efde1523785feabcd123'
+				},
+		
+			notify : {
+				uuid: '0000f0f21212efde1523785feabcd123'
+				}
+		},
+		
+		serviceDevInfo : {
+			uuid : '180a',
+			
+			serialNo:{
+				uuid: '2a25',
+			}
 		}
+	},
+
+	Protocol : {
+		Link   : new Buffer(0x10, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+		FindMe : new Buffer(0x70, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
 	}
 };
 

@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.4",
-    "noble": "file:noble"
+    "noble": "file:noble",
+    "promise": "^8.0.1"
   }
 }
