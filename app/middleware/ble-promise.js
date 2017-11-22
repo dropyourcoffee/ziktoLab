@@ -49,8 +49,8 @@ exports_.DiscoverLayer  = (peripheral)=>{
 	});
 };
 
-exports_.DiscoverCharacteristics = (peripheral)=>{
-	console.log("Discovering Characteristics...");
+exports_.DiscoverCharacteristicsByPeripheral = (peripheral)=>{
+	console.log("Discovering Characteristics(p)...");
 
 	return new Promise((resolve,reject)=>{
 		peripheral.discoverAllServicesAndCharacteristics((err,services,characteristics)=>{
@@ -63,4 +63,21 @@ exports_.DiscoverCharacteristics = (peripheral)=>{
 			return;
 		});
 	});
-}
+};
+
+exports_.DiscoverCharacteristicsByService = (service)=>{
+  console.log("Discovering Characteristics(s)...");
+
+  return new Promise((resolve,reject)=>{
+    service.discoverCharacteristics(null,(err,characteristics)=>{
+
+      if(err) reject(err);
+      else    {
+        resolve(characteristics);
+      }
+
+      return;
+    });
+  });
+};
+

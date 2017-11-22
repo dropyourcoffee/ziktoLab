@@ -23,20 +23,39 @@ noble.on('discover', async function(peripheral) {
     console.log(peripheral.rssi);
 
     peripheral = await asyncBLE.Connect(peripheral);
-  	console.log("peri uuid :: " + peripheral.uuid);
 
   	serviceMain = await asyncBLE.DiscoverServices(peripheral);
-  	serviceMain = _.filter(serviceMain,{'uuid':ziktoWalk.Gatt.serviceMain.uuid});
+  	serviceMain = _.filter(serviceMain,{'uuid':ziktoWalk.Gatt.serviceMain.uuid})[0];
+
+  	//let chars = await asyncBLE.DiscoverCharacteristicsByService(serviceMain);
+  	let chars = await asyncBLE.DiscoverCharacteristicsByPeripheral(peripheral);
+
+  	let rwCharacteristics = _.filter(chars,{"uuid":ziktoWalk.Gatt.serviceMain.readWrite.uuid})[0];
+  	let notiCharacteristics = _.filter(chars,{"uuid":ziktoWalk.Gatt.serviceMain.notify.uuid})[0];
+
+  	const findme = ziktoWalk.Protocol.FindMe;
+  	notiCharacteristics.subscribe(err=>{
+  	  if(err) console.log("Error");
+
+      notiCharacteristics.on("data",(data,isNotification) => {
+        data.forEach((d)=>{
+          process.stdout.write(d.toString(16)+" ");
+        });
+        process.stdout.write("\n");
+      });
 
 
-  	const chars = await asyncBLE.DiscoverCharacteristics(peripheral);
-  	//console.log("m"+ziktoWalk.serviceMain.readWrite.uuid);
-  	const rwCharacteristics = _.filter(chars,{'uuid':ziktoWalk.Gatt.serviceMain.readWrite.uuid});
-  	console.log(rwCharacteristics);
+      rwCharacteristics.write(findme,false,(err)=>{
+        if(err) console.log("Error");
+        console.log("Done");
 
-  	console.log(ziktoWalk.Protocol);
-  	const findme = ziktoWalk.Protocol.FindMe;	
-  	noble.write(peripheral.uuid, ziktoWalk.Gatt.serviceMain.uuid, ziktoWalk.Gatt.serviceMain.readWrite.uuid,findme,false)
+      });
+    });
+
+    /*noble.write(peripheral.uuid, ziktoWalk.Gatt.serviceMain.uuid, ziktoWalk.Gatt.serviceMain.readWrite.uuid,findme,false,(err)=>{
+  	  if(err) console.log("Error");
+  	  console.log("Done");
+    });*/
 
 
   }
