@@ -4,11 +4,14 @@ exports_ = module.exports = {};
 
 exports_.Connect = (peripheral) => {
 	return new Promise((resolve,reject)=>{
-		console.log("connected");
+		process.stdout.write("\nConnecting " + peripheral.advertisement.localName + "...  ");
 		peripheral.connect((err)=>{
 			
 			if(err) reject(err);
-			else    resolve(peripheral);
+			else{
+			  console.log("Connected");
+			  resolve(peripheral);
+			}
 
 			return;
 		});

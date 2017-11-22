@@ -1,24 +1,84 @@
 const noble = require('noble');
 const ziktoWalk = require('./const').ziktoWalk;
-const asyncBLE = require('./middleware').asyncBLE
+const asyncBLE = require('./middleware').asyncBLE;
 const _ = require('lodash');
+const readline = require('readline');
 
-//noble.startScanning();
+
+readline.emitKeypressEvents(process.stdin);
+process.stdin.setRawMode(true);
+
+
+let ScanList = [];
+let ConnList = [];
+
+displayMenu = () => {
+  console.log("Press 's' to scan BLE Devices");
+};
 
 noble.on('stateChange', function(state) {
-  if (state === 'poweredOn') {
-    process.stdout.write('scanninggg ');
-    noble.startScanning();;
-  }
-  else {
-    noble.stopScanning();
-    console.log("stop scanning");
-  }
+  process.stdin.on('keypress', async (str, key) => {
+    if (key.ctrl && key.name === 'c') {
+      process.exit();
+    } else {
+
+      switch(key.name){
+        case 's':
+          scanList = [];
+          if (state === "poweredOn"){
+            noble.startScanning();
+            console.log("Scanning...");
+
+          }else{
+            console.log("Not Powered On");
+          }
+          break;
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+          let deviceSel = parseInt(key.name);
+          if(deviceSel > ScanList.length){
+            console.log("Device ["+deviceSel+"] is not defined.");
+          }else{
+            //console.log(scanList[deviceSel]);
+            let connected = await asyncBLE.Connect(ScanList[deviceSel]);
+            ConnList.push(connected);
+          }
+          break;
+        case "c":
+          process.stdout.write("\nConnected List : [");
+
+          ConnList.forEach((c)=>{
+            process.stdout.write(c.advertisement.localName+" ");
+          });
+          process.stdout.write("]");
+          break;
+        case 'q':
+          process.exit();
+          break;
+        default:
+          console.log(key.name);
+
+      }
+    }
+  });
+  displayMenu();
+
 });
+
 
 noble.on('discover', async function(peripheral) {
   
-  if(peripheral.advertisement.localName==='Zikto-walk' && peripheral.rssi > -60){
+  if(ScanList.length === 0 ) console.log("=======\nPress the device number to connect");
+  ScanList.push(peripheral);
+  console.log("[" + (ScanList.length-1) + "] : " + peripheral.advertisement.localName + " " + peripheral.address + " ("+peripheral.rssi+"dBm)");
+
+
+  //console.log(peripheral.address);
+  /*if(peripheral.advertisement.localName==='Zikto-walk' && peripheral.rssi > -60){
     process.stdout.write(peripheral.advertisement.localName+'...');
     console.log(peripheral.rssi);
 
@@ -52,13 +112,13 @@ noble.on('discover', async function(peripheral) {
       });
     });
 
-    /*noble.write(peripheral.uuid, ziktoWalk.Gatt.serviceMain.uuid, ziktoWalk.Gatt.serviceMain.readWrite.uuid,findme,false,(err)=>{
-  	  if(err) console.log("Error");
-  	  console.log("Done");
-    });*/
+    //noble.write(peripheral.uuid, ziktoWalk.Gatt.serviceMain.uuid, ziktoWalk.Gatt.serviceMain.readWrite.uuid,findme,false,(err)=>{
+  	  //if(err) console.log("Error");
+  	  //console.log("Done");
+    //});
 
 
-  }
+  }*/
 
 });
 
