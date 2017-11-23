@@ -66,7 +66,7 @@ noble.on('stateChange', function(state) {
           process.stdout.write("]");
           break;
         case "f":
-          console.log(ZiktoWalk.Protocol.FindMe);
+          ConnList[0].findMe();
           break;
 
         case 'q':

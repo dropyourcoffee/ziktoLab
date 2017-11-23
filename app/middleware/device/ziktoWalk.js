@@ -9,28 +9,51 @@ const ZiktoWalk = function(peripheral){
 
 ZiktoWalk.prototype = new AsyncBleDevice();
 
+Protocol = {
+  Link   : new Buffer([0x10, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+  FindMe : new Buffer([0x70, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+};
 
-ZiktoWalk.prototype.init = async function(){
-  await AsyncBleDevice.prototype.init.call(this);
-  console.log("Done");
-  this.serviceMain = _.filter(this.services,{'uuid':Gatt.serviceMain.uuid})[0];
+ZiktoWalk.prototype = {
+  init : async function(){
+    await AsyncBleDevice.prototype.init.call(this);
+    console.log("Done");
+    this.serviceMain = _.filter(this.services,{'uuid':Gatt.serviceMain.uuid})[0];
 
-  this.rwCharacteristics = _.filter(this.serviceMain.discoveredChars,{"uuid":Gatt.serviceMain.readWrite.uuid})[0];
-  this.notiCharacteristics = _.filter(this.serviceMain.discoveredChars,{"uuid":Gatt.serviceMain.notify.uuid})[0];
+    this.rwCharacteristics = _.filter(this.serviceMain.discoveredChars,{"uuid":Gatt.serviceMain.readWrite.uuid})[0];
+    this.notiCharacteristics = _.filter(this.serviceMain.discoveredChars,{"uuid":Gatt.serviceMain.notify.uuid})[0];
 
-  this.notiCharacteristics.subscribe(err=>{
-    if(err) console.log("Error");
+    this.notiCharacteristics.subscribe(err=>{
+      if(err) console.log("Error");
 
-    this.notiCharacteristics.on("data",(data,isNotification) => {
-      process.stdout.write("Data Received :: ")
-      data.forEach((d)=>{
-        process.stdout.write(d.toString(16)+" ");
+      this.notiCharacteristics.on("data",(data,isNotification) => {
+        process.stdout.write("Data Received :: ");
+        data.forEach((d)=>{
+          process.stdout.write(d.toString(16)+" ");
         });
-      process.stdout.write("\n");
+        process.stdout.write("\n");
+      });
+      console.log("Notification Enabled");
+      console.log("Press F");
+      return this;
     });
-    console.log("Notification Enabled");
+    return this;
+  },
+
+  findMe : function(){
+    this.rwCharacteristics.write(Protocol.FindMe,false,(err) => {
+      if(err) console.log("Error");
+      else    console.log("Find me");
+    });
     return;
-  });
+    /*return new Promise((resolve, reject)=>{
+      console.log(this.Protocol.FindMe);
+      this.rwCharacteristics.write(this.Protocol.FindMe ,false,(err)=>{
+        if(err) reject("Error");
+        resolve("FindMe");
+      });
+    });*/
+  },
 
 };
 
@@ -54,10 +77,6 @@ Gatt = {
   }
 };
 
-ZiktoWalk.Protocol = {
-  Link   : new Buffer([0x10, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
-  FindMe : new Buffer([0x70, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
-};
 
 ZiktoWalk.prototype.contructor = AsyncBleDevice;
 
