@@ -1,8 +1,10 @@
 const noble = require('noble');
-const ziktoWalk = require('./const').ziktoWalk;
+//const ziktoWalk = require('./const').ziktoWalk;
 const asyncBLE = require('./middleware').asyncBLE;
 const _ = require('lodash');
 const readline = require('readline');
+//const AsyncBleDevice = require("./middleware/device").AsyncBleDevice;
+const ZiktoWalk = require("./middleware/device").ZiktoWalk;
 
 
 readline.emitKeypressEvents(process.stdin);
@@ -56,6 +58,12 @@ noble.on('stateChange', function(state) {
           });
           process.stdout.write("]");
           break;
+        case "f":
+          let target = ConnList[0];
+          let a = new ZiktoWalk(target);
+          await a.init();
+          console.log(a.services);
+
         case 'q':
           process.exit();
           break;
