@@ -1,8 +1,10 @@
 const noble = require('noble');
-const ziktoWalk = require('./const').ziktoWalk;
+//const ziktoWalk = require('./const').ziktoWalk;
 const asyncBLE = require('./middleware').asyncBLE;
 const _ = require('lodash');
 const readline = require('readline');
+//const AsyncBleDevice = require("./middleware/device").AsyncBleDevice;
+const ZiktoWalk = require("./middleware/device").ZiktoWalk;
 
 
 readline.emitKeypressEvents(process.stdin);
@@ -39,13 +41,20 @@ noble.on('stateChange', function(state) {
         case '3':
         case '4':
         case '5':
+          noble.stopScanning();
           let deviceSel = parseInt(key.name);
           if(deviceSel > ScanList.length){
             console.log("Device ["+deviceSel+"] is not defined.");
           }else{
             //console.log(scanList[deviceSel]);
             let connected = await asyncBLE.Connect(ScanList[deviceSel]);
-            ConnList.push(connected);
+            //ConnList.push(connected);
+
+            if(connected.advertisement.localName === "Zikto-walk"){
+              let target = new ZiktoWalk(connected);
+              await target.init();
+              ConnList.push(target);
+            }
           }
           break;
         case "c":
@@ -56,6 +65,10 @@ noble.on('stateChange', function(state) {
           });
           process.stdout.write("]");
           break;
+        case "f":
+          ConnList[0].findMe();
+          break;
+
         case 'q':
           process.exit();
           break;
