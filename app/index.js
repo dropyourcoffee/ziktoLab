@@ -41,13 +41,20 @@ noble.on('stateChange', function(state) {
         case '3':
         case '4':
         case '5':
+          noble.stopScanning();
           let deviceSel = parseInt(key.name);
           if(deviceSel > ScanList.length){
             console.log("Device ["+deviceSel+"] is not defined.");
           }else{
             //console.log(scanList[deviceSel]);
             let connected = await asyncBLE.Connect(ScanList[deviceSel]);
-            ConnList.push(connected);
+            //ConnList.push(connected);
+
+            if(connected.advertisement.localName === "Zikto-walk"){
+              let target = new ZiktoWalk(connected);
+              await target.init();
+              ConnList.push(target);
+            }
           }
           break;
         case "c":
@@ -59,10 +66,8 @@ noble.on('stateChange', function(state) {
           process.stdout.write("]");
           break;
         case "f":
-          let target = ConnList[0];
-          let a = new ZiktoWalk(target);
-          await a.init();
-          console.log(a.services);
+          console.log(ZiktoWalk.Protocol.FindMe);
+          break;
 
         case 'q':
           process.exit();
