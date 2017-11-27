@@ -1,7 +1,13 @@
-const ZiktoWalk = require("./ZiktoWalk");
-const AsyncBleDevice = require("./AsyncBleDevice");
+const fs = require('fs');
 
-module.exports = {
-  AsyncBleDevice,
-  ZiktoWalk,
-}
+_exports = {};
+files = fs.readdirSync(__dirname);
+
+files.forEach(function(file) {
+    if(file !== "index.js" && file.includes(".js")) {
+      _exports[file.split(".js")[0]] = require(__dirname+"/"+file);
+    }
+
+});
+
+module.exports = _exports;
