@@ -1,9 +1,6 @@
 const noble = require('noble');
-//const ziktoWalk = require('./const').ziktoWalk;
 const asyncBLE = require('./middleware').asyncBLE;
-const _ = require('lodash');
 const readline = require('readline');
-//const AsyncBleDevice = require("./middleware/device").AsyncBleDevice;
 const ZiktoWalk = require("./middleware/device").ZiktoWalk;
 
 
@@ -138,3 +135,33 @@ noble.on('discover', async function(peripheral) {
 });
 
 
+var express = require('express');
+var routes = require('../routes/index');
+var path = require("path");
+
+
+var app = express();
+app.set('views', path.join(__dirname, '../views'));
+app.set('view engine', 'jade');
+
+
+app.use('/html',express.static('./html'));
+app.use('/libs',express.static('./libs'));
+
+app.use('/',routes);
+
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
+
+module.exports = app;
