@@ -68,7 +68,9 @@ noble.on('stateChange', function(state) {
         case "f":
           ConnList[0].findMe();
           break;
-
+        case "g":
+          ConnList[0].gait();
+          break;
         case 'q':
           process.exit();
           break;
