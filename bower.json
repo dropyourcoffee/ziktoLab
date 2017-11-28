@@ -1,0 +1,20 @@
+{
+  "name": "ziktoLab",
+  "description": "Required Components",
+  "main": "index.js",
+  "authors": [
+    "dropyourcoffee@gmail.com"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/dropyourcoffee/ziktoLab",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1"
+  }
+}

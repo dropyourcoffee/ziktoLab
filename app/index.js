@@ -1,3 +1,7 @@
+const express = require('express');
+const routes = require('../routes/index');
+const path = require("path");
+const logger = require('morgan');
 const noble = require('noble');
 const asyncBLE = require('./middleware').asyncBLE;
 const readline = require('readline');
@@ -62,11 +66,11 @@ noble.on('stateChange', function(state) {
           });
           process.stdout.write("]");
           break;
-        case "f":
-          ConnList[0].findMe();
+        case "f": // FindMe
+          if(ConnList[0].deviceType==="Zikto-walk") ConnList[0].findMe();
           break;
-        case "g":
-          ConnList[0].gait();
+        case "g": // Gait
+          if(ConnList[0].deviceType==="Zikto-walk") ConnList[0].gait();
           break;
         case 'q':
           process.exit();
@@ -135,20 +139,22 @@ noble.on('discover', async function(peripheral) {
 });
 
 
-var express = require('express');
-var routes = require('../routes/index');
-var path = require("path");
 
+
+//-
 
 var app = express();
 app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', 'jade');
 
-
+app.use(logger('dev'));
+//app.use(bodyParser.json({limit: '50mb'}));
+//app.use(bodyParser.urlencoded({limit: '500mb',parameterLimit : 100000000000 ,extended: true}));
 app.use('/html',express.static('./html'));
 app.use('/libs',express.static('./libs'));
 
 app.use('/',routes);
+app.use('/bower_components',  express.static(__dirname + '/../bower_components'));
 
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
