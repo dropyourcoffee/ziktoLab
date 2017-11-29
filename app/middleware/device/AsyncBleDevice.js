@@ -1,4 +1,4 @@
-const asyncBLE = require("./..").asyncBLE;
+const asyncBLE = require("../ble-promise");
 const _ = require("lodash");
 
 
@@ -11,6 +11,7 @@ AsyncBleDevice.prototype = {
 
   init : async function(){
     this.services = await asyncBLE.DiscoverServices(this._peripheral);
+    this.deviceType = this._peripheral.advertisement.localName;
 
     let i;
     for(i=0; i<this.services.length; i++){
