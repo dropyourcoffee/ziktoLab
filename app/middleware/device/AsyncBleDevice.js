@@ -1,4 +1,4 @@
-const asyncBLE = require("./..").asyncBLE;
+const asyncBLE = require("../ble-promise");
 const _ = require("lodash");
 
 
