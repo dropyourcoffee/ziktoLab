@@ -122,6 +122,10 @@ module.exports = {
     let list = _.map(ScanList,'advertisement');
     return list;
   },
+  connList(){
+    let list = _.map(ConnList,'deviceType');
+    return list;
+  },
   ScanDevices(){
     if(IsScanning) {
       return "Scanning...";
@@ -137,5 +141,20 @@ module.exports = {
     noble.stopScanning();
     return "Stopped";
   },
+  connectDevice : async function(id){
+    let deviceSel = parseInt(id);
+    if(deviceSel > ScanList.length){
+      console.log("Device ["+deviceSel+"] is not defined.");
+    }else{
+      let connected = await asyncBLE.Connect(ScanList[deviceSel]);
 
+      if(connected.advertisement.localName === "Zikto-walk"){
+        let target = new ZiktoWalk(connected);
+        await target.init();
+        ScanList.splice(parseInt(id),1);
+        ConnList.push(target);
+      }
+    }
+    return;
+  },
 };

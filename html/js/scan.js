@@ -9,15 +9,21 @@ $( document ).ready(function() {
 
 $(document).on('click','.btn_conn',function(){
   console.log(this.id);
-  $.get("http://localhost:3001/conn", function(data){
+  $.get("http://localhost:3001/conn", {connId:this.id}, function(data){
 
     let content = "";
+    let i = 0;
+    data.scanList.forEach((p)=>{
+      content += p.localName + "<button class= 'btn_conn' id=" + (i++) + " '>Connect</button><br>";
+    });
+    $('.scanList').html(content);
+    content = "";
     data.connList.forEach((p)=>{
-      content += p.localName;
+      content += p + "<br>";
     });
     $('.connList').html(content);
 
-    setTimeout(checkConnList, 1000);
+
   });
 
 });
@@ -32,20 +38,16 @@ function ajaxScan(){
 
 
 function doScan(){
-  $.get("http://localhost:3001/scan", {scan:isScan?true:false} ,function(data, status){
+  $.get("http://localhost:3001/scan", {scan:isScan} ,function(data, status){
     $('.status').html(data.status);
 
     let content = "";
     let i = 0;
     data.scanList.forEach((p)=>{
       content += p.localName + "<button class= 'btn_conn' id=" + (i++) + " '>Connect</button><br>";
-      $("btn_conn"+i).click(function(){
-        console.log(this.id);
-      })
     });
     $('.scanList').html(content);
 
-    //console.log(JSON.stringify(data.scanList));
     if($("#btn_scan").html()==="Stop Scan") setTimeout(doScan, 1000);
   });
 };
