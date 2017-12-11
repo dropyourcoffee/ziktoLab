@@ -143,8 +143,10 @@ module.exports = {
   },
   connectDevice : async function(id){
     let deviceSel = parseInt(id);
+    let msg;
     if(deviceSel > ScanList.length){
-      console.log("Device ["+deviceSel+"] is not defined.");
+      msg = "Device ["+deviceSel+"] is not defined.";
+      console.log(msg);
     }else{
       let connected = await asyncBLE.Connect(ScanList[deviceSel]);
 
@@ -154,7 +156,10 @@ module.exports = {
         ScanList.splice(parseInt(id),1);
         ConnList.push(target);
       }
+      msg = "Connected " + connected.advertisement.localName;
+      console.log(msg);
+
     }
-    return;
+    return msg;
   },
 };

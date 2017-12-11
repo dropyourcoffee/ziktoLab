@@ -8,20 +8,22 @@ $( document ).ready(function() {
 });
 
 $(document).on('click','.btn_conn',function(){
-  console.log(this.id);
+  $('.status').html("Connecting...");
   $.get("http://localhost:3001/conn", {connId:this.id}, function(data){
+
+    $('.status').html(data.status);
 
     let content = "";
     let i = 0;
     data.scanList.forEach((p)=>{
       content += p.localName + "<button class= 'btn_conn' id=" + (i++) + " '>Connect</button><br>";
     });
-    $('.scanList').html(content);
+    $('#scanList').html(content);
     content = "";
     data.connList.forEach((p)=>{
       content += p + "<br>";
     });
-    $('.connList').html(content);
+    $('#connList').html(content);
 
 
   });
@@ -46,7 +48,7 @@ function doScan(){
     data.scanList.forEach((p)=>{
       content += p.localName + "<button class= 'btn_conn' id=" + (i++) + " '>Connect</button><br>";
     });
-    $('.scanList').html(content);
+    $('#scanList').html(content);
 
     if($("#btn_scan").html()==="Stop Scan") setTimeout(doScan, 1000);
   });

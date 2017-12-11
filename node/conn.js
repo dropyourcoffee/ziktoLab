@@ -12,8 +12,10 @@ router.all('/', async function(req, res, next) {
 
   let deviceSel = parseInt(req.query.connId);
 
-  await bleMiddleware.connectDevice(deviceSel);
-  res.json( {connList:bleMiddleware.connList(),
+  let status = await bleMiddleware.connectDevice(deviceSel);
+
+  res.json( {status,
+             connList:bleMiddleware.connList(),
              scanList:bleMiddleware.scanList()});
 
 });
