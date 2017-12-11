@@ -51,20 +51,29 @@ noble.on('stateChange', function(state) {
           }else{
             //console.log(scanList[deviceSel]);
             let connected = await asyncBLE.Connect(ScanList[deviceSel]);
-            //ConnList.push(connected);
 
             if(connected.advertisement.localName === "Zikto-walk"){
               let target = new ZiktoWalk(connected);
               await target.init();
+              ScanList.splice(parseInt(key.name),1);
               ConnList.push(target);
             }
           }
           break;
+        case "x":
+          process.stdout.write("\nScanned List : [");
+
+          ScanList.forEach((s)=>{
+            process.stdout.write(s.advertisement.localName+" ");
+          });
+          process.stdout.write("]");
+          break;
+
         case "c":
           process.stdout.write("\nConnected List : [");
 
           ConnList.forEach((c)=>{
-            process.stdout.write(c.advertisement.localName+" ");
+            process.stdout.write(c.deviceType+" ");
           });
           process.stdout.write("]");
           break;
@@ -114,15 +123,19 @@ module.exports = {
     return list;
   },
   ScanDevices(){
-
     if(IsScanning) {
       return "Scanning...";
     }else{
       console.log("Scanning Starts..");
       ScanList = [];
       noble.startScanning();
-      "Idle...";
+      return "Idle...";
     }
   },
+  StopScanDevices(){
+    console.log("Scanning Stops..");
+    noble.stopScanning();
+    return "Stopped";
+  },
 
-}
+};
