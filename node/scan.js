@@ -17,6 +17,7 @@ router.all('/', function(req, res, next) {
   }
 
   res.json( {status,
+             connList:bleMiddleware.connList(),
              scanList:bleMiddleware.scanList()});
 
 });

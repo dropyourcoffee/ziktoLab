@@ -12,11 +12,34 @@ process.stdin.setRawMode(true);
 let ScanList = [];
 let ConnList = [];
 let Status;
-let IsScanning = ""
+let IsScanning = "";
+let dotdotdot = 0;
 
 
-displayMenu = () => {
+const displayMenu = () => {
   console.log("Press 's' to scan BLE Devices");
+};
+
+const connectDevice = async function(id){
+  let deviceSel = parseInt(id);
+  let msg;
+  if(deviceSel > ScanList.length){
+    msg = "Device ["+deviceSel+"] is not defined.";
+    console.log(msg);
+  }else{
+    let connected = await asyncBLE.Connect(ScanList[deviceSel]);
+
+    if(connected.advertisement.localName === "Zikto-walk"){
+      let target = new ZiktoWalk(connected);
+      await target.init();
+      ScanList.splice(parseInt(id),1);
+      ConnList.push(target);
+    }
+    msg = "Connected '" + connected.advertisement.localName + "'";
+    console.log(msg);
+
+  }
+  return msg;
 };
 
 
@@ -45,20 +68,7 @@ noble.on('stateChange', function(state) {
         case '4':
         case '5':
           noble.stopScanning();
-          let deviceSel = parseInt(key.name);
-          if(deviceSel > ScanList.length){
-            console.log("Device ["+deviceSel+"] is not defined.");
-          }else{
-            //console.log(scanList[deviceSel]);
-            let connected = await asyncBLE.Connect(ScanList[deviceSel]);
-
-            if(connected.advertisement.localName === "Zikto-walk"){
-              let target = new ZiktoWalk(connected);
-              await target.init();
-              ScanList.splice(parseInt(key.name),1);
-              ConnList.push(target);
-            }
-          }
+          connectDevice(parseInt(key.name));
           break;
         case "x":
           process.stdout.write("\nScanned List : [");
@@ -102,8 +112,6 @@ noble.on('discover', async function(peripheral) {
   if(ScanList.length === 0 ) console.log("=======\nPress the device number to connect");
   ScanList.push(peripheral);
   console.log("[" + (ScanList.length-1) + "] : " + peripheral.advertisement.localName + " " + peripheral.address + " ("+peripheral.rssi+"dBm)");
-  //console.log(peripheral.advertisement);
-  //console.log(peripheral.address);
 
 });
 
@@ -119,16 +127,23 @@ module.exports = {
 	noble,
   status(){return Status},
   scanList(){
-    let list = _.map(ScanList,'advertisement');
+    //let list = _.map(ScanList,'advertisement');
+    let list = _.map(ScanList, _.partial(_.ary(_.pick, 2), _, ['advertisement','address']));
     return list;
   },
   connList(){
-    let list = _.map(ConnList,'deviceType');
+    let list = [];
+    ConnList.forEach((c) => {
+      list.push({peripheral: c._peripheral.advertisement});
+    });
     return list;
   },
   ScanDevices(){
     if(IsScanning) {
-      return "Scanning...";
+      let statmsg = "Scanning";
+      dotdotdot = (dotdotdot+1)%4;
+      for(i=0; i<dotdotdot; i++) statmsg += ".";
+      return statmsg;
     }else{
       console.log("Scanning Starts..");
       ScanList = [];
@@ -141,25 +156,6 @@ module.exports = {
     noble.stopScanning();
     return "Stopped";
   },
-  connectDevice : async function(id){
-    let deviceSel = parseInt(id);
-    let msg;
-    if(deviceSel > ScanList.length){
-      msg = "Device ["+deviceSel+"] is not defined.";
-      console.log(msg);
-    }else{
-      let connected = await asyncBLE.Connect(ScanList[deviceSel]);
-
-      if(connected.advertisement.localName === "Zikto-walk"){
-        let target = new ZiktoWalk(connected);
-        await target.init();
-        ScanList.splice(parseInt(id),1);
-        ConnList.push(target);
-      }
-      msg = "Connected " + connected.advertisement.localName;
-      console.log(msg);
-
-    }
-    return msg;
-  },
+  connectDevice,
 };
+

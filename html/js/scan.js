@@ -4,27 +4,13 @@ let isScan;
 $( document ).ready(function() {
 
   $("#btn_scan")[0].addEventListener("click", ajaxScan);
-  //checkConnList(); // Need to poll connected list of devices
 });
 
 $(document).on('click','.btn_conn',function(){
-  $('.status').html("Connecting...");
+  $('.status').html("Connecting " + $("div.peri_scan")[this.id].innerText + "...");
   $.get("http://localhost:3001/conn", {connId:this.id}, function(data){
 
-    $('.status').html(data.status);
-
-    let content = "";
-    let i = 0;
-    data.scanList.forEach((p)=>{
-      content += p.localName + "<button class= 'btn_conn' id=" + (i++) + " '>Connect</button><br>";
-    });
-    $('#scanList').html(content);
-    content = "";
-    data.connList.forEach((p)=>{
-      content += p + "<br>";
-    });
-    $('#connList').html(content);
-
+    renderPeripherals(data);
 
   });
 
@@ -41,33 +27,38 @@ function ajaxScan(){
 
 function doScan(){
   $.get("http://localhost:3001/scan", {scan:isScan} ,function(data, status){
-    $('.status').html(data.status);
 
-    let content = "";
-    let i = 0;
-    data.scanList.forEach((p)=>{
-      content += p.localName + "<button class= 'btn_conn' id=" + (i++) + " '>Connect</button><br>";
-    });
-    $('#scanList').html(content);
-
+    renderPeripherals(data);
     if($("#btn_scan").html()==="Stop Scan") setTimeout(doScan, 1000);
+
   });
 };
 
+function renderPeripherals(data){
+  if(data.status) $('.status').html(data.status);
 
-/*function checkConnList(){
+  let content = "";
+  let i = 0;
 
-  $.get("http://localhost:3001/conn", function(data){
-
-    let content = "";
-    data.connList.forEach((p)=>{
-      content += p.localName;
+  if(data.scanList){
+    data.scanList.forEach((p)=>{
+      content += "<div class='peri_scan' id=" + i + "><button class= 'btn_conn' id=" + (i++) + " '>"+ p.advertisement.localName + " " + p.address + "</button></div>";
     });
-    $('.connList').html(content);
+    $('#scanList').html(content);
+  }
 
-    setTimeout(checkConnList, 1000);
-  });
+  if(data.connList){
+    content = "";
+    i = 0;
+    data.connList.forEach((p)=>{
+      if(p.peripheral.localName === "Zikto-walk"){
+        content += "<div class='peri_conn' id=" + (i++) + ">" + p.peripheral.localName + "<button>Find Me</button><button>Start Gait</button>" + "</div>";
+      }else{
+        content += "<div class='peri_conn' id=" + (i++) + ">" + p.peripheral.localName + "</div>";
+      }
+    });
+    $('#connList').html(content);
+  }
+}
 
-
-}*/
 
