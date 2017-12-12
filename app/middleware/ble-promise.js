@@ -4,11 +4,14 @@ exports_ = module.exports = {};
 
 exports_.Connect = (peripheral) => {
 	return new Promise((resolve,reject)=>{
-		console.log("connected");
+		process.stdout.write("\nConnecting " + peripheral.advertisement.localName + "...  ");
 		peripheral.connect((err)=>{
 			
 			if(err) reject(err);
-			else    resolve(peripheral);
+			else{
+			  console.log("Connected");
+			  resolve(peripheral);
+			}
 
 			return;
 		});
@@ -31,7 +34,7 @@ exports_.DiscoverServices = (peripheral)=> {
 };
 
 exports_.DiscoverLayer  = (peripheral)=>{
-	console.log("Find SErvices and Characteristics...");
+	console.log("Find Services and Characteristics...");
 
 	return new Promise((resolve,reject)=>{
 		peripheral.discoverAllServicesAndCharacteristics((err,services,characteristics)=>{
@@ -49,7 +52,7 @@ exports_.DiscoverLayer  = (peripheral)=>{
 	});
 };
 
-exports_.DiscoverCharacteristics = (peripheral)=>{
+exports_.DiscoverCharacteristicsByPeripheral = (peripheral)=>{
 	console.log("Discovering Characteristics...");
 
 	return new Promise((resolve,reject)=>{
@@ -63,4 +66,21 @@ exports_.DiscoverCharacteristics = (peripheral)=>{
 			return;
 		});
 	});
-}
+};
+
+exports_.DiscoverCharacteristicsByService = (service)=>{
+  console.log("Discovering Characteristics for Service... [" + service.uuid + "]");
+
+  return new Promise((resolve,reject)=>{
+    service.discoverCharacteristics(null,(err,characteristics)=>{
+
+      if(err) reject(err);
+      else    {
+        resolve(characteristics);
+      }
+
+      return;
+    });
+  });
+};
+

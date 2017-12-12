@@ -1,46 +1,43 @@
-const noble = require('noble');
-const ziktoWalk = require('./const').ziktoWalk;
-const asyncBLE = require('./middleware').asyncBLE
-const _ = require('lodash');
+const routes = require('../routes/index');
+const path = require("path");
+//const logger = require('morgan');
+const scan = require('../node/scan');
+const conn = require('../node/conn');
+const command = require('../node/command');
+const data = require('../node/data');
 
-//noble.startScanning();
 
-noble.on('stateChange', function(state) {
-  if (state === 'poweredOn') {
-    process.stdout.write('scanninggg ');
-    noble.startScanning();;
-  }
-  else {
-    noble.stopScanning();
-    console.log("stop scanning");
-  }
+//-
+const express = require('express');
+const app = express();
+
+app.set('views', path.join(__dirname, '../views'));
+app.set('view engine', 'jade');
+
+//app.use(bodyParser.json({limit: '50mb'}));
+//app.use(bodyParser.urlencoded({limit: '500mb',parameterLimit : 100000000000 ,extended: true}));
+app.use('/html',express.static('./html'));
+app.use('/libs',express.static('./libs'));
+
+app.use('/',routes);
+app.use('/bower_components',  express.static(__dirname + '/../bower_components'));
+app.use('/scan',scan);
+app.use('/conn',conn);
+app.use('/command',command);
+app.use('/data',data);
+
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
-noble.on('discover', async function(peripheral) {
-  
-  if(peripheral.advertisement.localName==='Zikto-walk' && peripheral.rssi > -60){
-    process.stdout.write(peripheral.advertisement.localName+'...');
-    console.log(peripheral.rssi);
-
-    peripheral = await asyncBLE.Connect(peripheral);
-  	console.log("peri uuid :: " + peripheral.uuid);
-
-  	serviceMain = await asyncBLE.DiscoverServices(peripheral);
-  	serviceMain = _.filter(serviceMain,{'uuid':ziktoWalk.Gatt.serviceMain.uuid});
-
-
-  	const chars = await asyncBLE.DiscoverCharacteristics(peripheral);
-  	//console.log("m"+ziktoWalk.serviceMain.readWrite.uuid);
-  	const rwCharacteristics = _.filter(chars,{'uuid':ziktoWalk.Gatt.serviceMain.readWrite.uuid});
-  	console.log(rwCharacteristics);
-
-  	console.log(ziktoWalk.Protocol);
-  	const findme = ziktoWalk.Protocol.FindMe;	
-  	noble.write(peripheral.uuid, ziktoWalk.Gatt.serviceMain.uuid, ziktoWalk.Gatt.serviceMain.readWrite.uuid,findme,false)
-
-
-  }
-
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
 });
 
-
+module.exports = app;
