@@ -16,6 +16,14 @@ $(document).on('click','.btn_conn',function(){
 
 });
 
+$(document).on('click','.btn_sendCmd',function(){
+
+
+  $.get("http://localhost:3001/command", {periId:$(this).attr('periid'), cmd:$(this).text()} ,function(data, status) {
+    console.log(data);
+  });
+});
+
 function ajaxScan(){
 
   isScan = !isScan;
@@ -49,12 +57,17 @@ function renderPeripherals(data){
 
   if(data.connList){
     content = "";
-    i = 0;
+    i = -1;
     data.connList.forEach((p)=>{
       if(p.peripheral.localName === "Zikto-walk"){
-        content += "<div class='peri_conn' id=" + (i++) + ">" + p.peripheral.localName + "<button>Find Me</button><button>Start Gait</button>" + "</div>";
+        content += "<div class='peri_conn' id=" + (++i) + ">" + p.peripheral.localName;
+        j=0;
+        p.cmds.forEach(c=>{
+          content += "<button class='btn_sendCmd' periid="+ i +" cmdid="+ (j++) +">"+ c +"</button>";
+        });
+        content += "</div>";
       }else{
-        content += "<div class='peri_conn' id=" + (i++) + ">" + p.peripheral.localName + "</div>";
+        content += "<div class='peri_conn' id=" + (++i) + ">" + p.peripheral.localName + "</div>";
       }
     });
     $('#connList').html(content);

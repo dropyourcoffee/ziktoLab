@@ -33,6 +33,7 @@ const connectDevice = async function(id){
       let target = new ZiktoWalk(connected);
       await target.init();
       ScanList.splice(parseInt(id),1);
+      target.findMe();
       ConnList.push(target);
     }
     msg = "Connected '" + connected.advertisement.localName + "'";
@@ -42,6 +43,9 @@ const connectDevice = async function(id){
   return msg;
 };
 
+const execCommand = async function(connid, func){
+  ConnList[connid][func]();
+}
 
 noble.on('stateChange', function(state) {
   Status = state;
@@ -91,7 +95,10 @@ noble.on('stateChange', function(state) {
           if(ConnList[0].deviceType==="Zikto-walk") ConnList[0].findMe();
           break;
         case "g": // Gait
-          if(ConnList[0].deviceType==="Zikto-walk") ConnList[0].gait();
+          if(ConnList[0].deviceType==="Zikto-walk") ConnList[0].startSampling();
+          break;
+        case "h":
+          if(ConnList[0].deviceType==="Zikto-walk") ConnList[0].stopSampling();
           break;
         case 'q':
           process.exit();
@@ -134,7 +141,12 @@ module.exports = {
   connList(){
     let list = [];
     ConnList.forEach((c) => {
-      list.push({peripheral: c._peripheral.advertisement});
+      //console.log(c.findMe);
+      var deviceCmd = Object.getOwnPropertyNames(Object.getPrototypeOf(c));
+
+      deviceCmd = _.pull(deviceCmd, 'init', 'contructor'); // Available Methods varies by deviceTypes
+      //c[deviceCmd[1]]();
+      list.push({peripheral: c._peripheral.advertisement, cmds:deviceCmd});
     });
     return list;
   },
@@ -157,5 +169,6 @@ module.exports = {
     return "Stopped";
   },
   connectDevice,
+  execCommand,
 };
 

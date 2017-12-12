@@ -3,6 +3,7 @@ const path = require("path");
 //const logger = require('morgan');
 const scan = require('../node/scan');
 const conn = require('../node/conn');
+const command = require('../node/command');
 
 //-
 const express = require('express');
@@ -20,6 +21,7 @@ app.use('/',routes);
 app.use('/bower_components',  express.static(__dirname + '/../bower_components'));
 app.use('/scan',scan);
 app.use('/conn',conn);
+app.use('/command',command);
 
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
