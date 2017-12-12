@@ -7,12 +7,15 @@ const ZiktoWalk = function(peripheral){
 
 };
 
+sensorData = {};
+
 ZiktoWalk.prototype = new AsyncBleDevice();
 
 Protocol = {
   Link   : new Buffer([0x10, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
   FindMe : new Buffer([0x70, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
   Gait   : new Buffer([0x70, 0x05, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+  GaitStop: new Buffer([0x71, 0x05, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
 };
 
 const protoFunc = (data,isNotification) => {
@@ -56,8 +59,8 @@ const sensorDataRead = (d) => {
   let gyrox = d.readInt16LE(8);
   let gyroy = d.readInt16LE(10);
   let gyroz = d.readInt16LE(12);
-
-  console.log("[" + d[1] + "] " + accelx + "," + accely + "," + accelz);
+  sensorData = {accelx,accely,accelz,gyrox,gyroy,gyroz};
+  //console.log("[" + d[1] + "] " + accelx + "," + accely + "," + accelz);
 };
 
 ZiktoWalk.prototype = {
@@ -68,7 +71,7 @@ ZiktoWalk.prototype = {
 
     this.rwCharacteristics = _.filter(this.serviceMain.discoveredChars,{"uuid":Gatt.serviceMain.readWrite.uuid})[0];
     this.notiCharacteristics = _.filter(this.serviceMain.discoveredChars,{"uuid":Gatt.serviceMain.notify.uuid})[0];
-
+    this.sensorData = {};
     this.notiCharacteristics.subscribe(err=>{
       if(err) console.log("Error");
 
@@ -88,11 +91,25 @@ ZiktoWalk.prototype = {
     return;
   },
 
-  gait: function(){
+  startSampling: function(){
     this.rwCharacteristics.write(Protocol.Gait,false,(err) => {
       console.log( (err)? "Error" : "Lab starts" );
     });
     return;
+  },
+
+  stopSampling: function(){
+    this.rwCharacteristics.write(Protocol.GaitStop,false,(err) => {
+      console.log( (err)? "Error" : "Lab starts" );
+    });
+    return;
+  },
+
+  collectSensorData: function(){
+    if(sensorData.accelx) return sensorData;
+    else return {accelx:0, accely:0, accelz:0, gryox:0, gyroy:0, gyroz:0};
+
+
   }
 
 };

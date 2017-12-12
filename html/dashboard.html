@@ -11,17 +11,26 @@
 <style>p.solid {border-style: solid;}</style>
 
 <div>
-    Welcome To Zikto Lab!<br>
-    <button class="ajaxsend">Scan</button>
+    <h1>Welcome To Zikto Lab!<br></h1>
+    <button id="btn_scan">Scan</button>
 </div>
 <div class="status">
 </div>
 
-<div style="display:flex">
-<div class="scanList" style="border-style:solid; width:50%">
+<style>
+    #scanList {
+        padding: 30px;
+        border: 1px solid #4CAF50;
+    }
+    .peri_conn {
+        padding: 30px;
+        border: 1px solid #0000FF;
+    }
+</style>
+<div id="scanList">
 </div>
 
-<div class="connList" style="border-style:solid; width:50%">
+<div id="connList">
 </div>
 </div>
 </body>
