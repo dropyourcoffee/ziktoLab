@@ -4,6 +4,8 @@ const path = require("path");
 const scan = require('../node/scan');
 const conn = require('../node/conn');
 const command = require('../node/command');
+const data = require('../node/data');
+
 
 //-
 const express = require('express');
@@ -22,6 +24,7 @@ app.use('/bower_components',  express.static(__dirname + '/../bower_components')
 app.use('/scan',scan);
 app.use('/conn',conn);
 app.use('/command',command);
+app.use('/data',data);
 
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

@@ -7,6 +7,8 @@ const ZiktoWalk = function(peripheral){
 
 };
 
+sensorData = {};
+
 ZiktoWalk.prototype = new AsyncBleDevice();
 
 Protocol = {
@@ -57,8 +59,8 @@ const sensorDataRead = (d) => {
   let gyrox = d.readInt16LE(8);
   let gyroy = d.readInt16LE(10);
   let gyroz = d.readInt16LE(12);
-
-  console.log("[" + d[1] + "] " + accelx + "," + accely + "," + accelz);
+  sensorData = {accelx,accely,accelz,gyrox,gyroy,gyroz};
+  //console.log("[" + d[1] + "] " + accelx + "," + accely + "," + accelz);
 };
 
 ZiktoWalk.prototype = {
@@ -69,7 +71,7 @@ ZiktoWalk.prototype = {
 
     this.rwCharacteristics = _.filter(this.serviceMain.discoveredChars,{"uuid":Gatt.serviceMain.readWrite.uuid})[0];
     this.notiCharacteristics = _.filter(this.serviceMain.discoveredChars,{"uuid":Gatt.serviceMain.notify.uuid})[0];
-
+    this.sensorData = {};
     this.notiCharacteristics.subscribe(err=>{
       if(err) console.log("Error");
 
@@ -102,6 +104,13 @@ ZiktoWalk.prototype = {
     });
     return;
   },
+
+  collectSensorData: function(){
+    if(sensorData.accelx) return sensorData;
+    else return {accelx:0, accely:0, accelz:0, gryox:0, gyroy:0, gyroz:0};
+
+
+  }
 
 };
 

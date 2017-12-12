@@ -45,7 +45,11 @@ const connectDevice = async function(id){
 
 const execCommand = async function(connid, func){
   ConnList[connid][func]();
-}
+};
+
+const getSensorData = function(connid){
+  return ConnList[connid].collectSensorData();
+};
 
 noble.on('stateChange', function(state) {
   Status = state;
@@ -144,7 +148,7 @@ module.exports = {
       //console.log(c.findMe);
       var deviceCmd = Object.getOwnPropertyNames(Object.getPrototypeOf(c));
 
-      deviceCmd = _.pull(deviceCmd, 'init', 'contructor'); // Available Methods varies by deviceTypes
+      deviceCmd = _.pull(deviceCmd, 'init', 'contructor', 'collectSensorData'); // Available Methods varies by deviceTypes
       //c[deviceCmd[1]]();
       list.push({peripheral: c._peripheral.advertisement, cmds:deviceCmd});
     });
@@ -170,5 +174,6 @@ module.exports = {
   },
   connectDevice,
   execCommand,
+  getSensorData,
 };
 
