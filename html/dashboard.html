@@ -5,33 +5,51 @@
     <title>Zikto Lab</title>
 </head>
 
-<body>
 <script src="/bower_components/jquery/dist/jquery.js"></script>
 <script src="js/scan.js"></script>
-<style>p.solid {border-style: solid;}</style>
+<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css">
+<link rel="stylesheet" href="css/style.css">
 
-<div>
-    <h1>Welcome To Zikto Lab!<br></h1>
-    <button id="btn_scan">Scan</button>
-</div>
-<div class="status">
-</div>
+<body>
 
-<style>
-    #scanList {
-        padding: 30px;
-        border: 1px solid #4CAF50;
-    }
-    .peri_conn {
-        padding: 30px;
-        border: 1px solid #0000FF;
-    }
-</style>
-<div id="scanList">
+<div class="container-fluid">
+        <h3>Welcome To Zikto Lab!<br></h3>
 </div>
 
-<div id="connList">
+<!-- Control Buttons -->
+<div class="navbar navbar-default"><div class="container">
+    <ul class="nav navbar-nav">
+        <p class="navbar-btn">
+            <a href="#" class="btn btn-default" id="btn_scan"><span class="glyphicon glyphicon-search"></span>Scan</a>
+            <a href="#" class="btn btn-default" >Control2</a>
+            <a href="#" class="btn btn-default" >Settings (Do Nothing)</a>
+        </p>
+    </ul>
+</div></div>
+
+
+<!-- Status, Peripherals, Connection List -->
+<div class="container">
+    Status
+    <div class="row status">
+
+    </div>
+    <div class="row">
+
+    <!-- Left -->
+    <div class="col-xs-6">
+        ScanList
+        <div id=scanList></div>
+    </div>
+    <!-- Right -->
+    <div class="col-xs-6">
+        Connection List
+        <div id=connList></div>
+    </div>
+
+    </div>
 </div>
+
 </div>
 </body>
 </html>

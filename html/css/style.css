@@ -1,0 +1,24 @@
+p.solid {border-style: solid;}
+#scanList {
+    padding: 30px;
+    border: 1px solid #4CAF50;
+}
+#connList{
+    padding: 30px;
+    border: 1px solid #7a43b6;
+}
+.status {
+    border: 1px solid #2b542c;
+    padding : 1px;
+    height : 40px;
+}
+.glyphicon{
+    margin-right: 10px;
+}
+
+.peri_conn{
+    border:1px solid;
+    border-radius: 5px;
+    padding: 5px;
+    word-wrap: break-word;
+}

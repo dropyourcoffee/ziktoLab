@@ -61,26 +61,26 @@ function renderPeripherals(data){
   let i = 0;
 
   if(data.scanList){
-    data.scanList.forEach((p)=>{
-      content += "<div class='peri_scan' id=" + i + "><button class= 'btn_conn' id=" + (i++) + " '>"+ p.advertisement.localName + " " + p.address + "</button></div>";
+    data.scanList.forEach((p,ii)=>{
+      content += "<div class='peri_scan' id=" + i + ">" +
+                    "<button class= 'btn-primary btn_conn' id=" + (i++) + " '>"+ p.advertisement.localName + " " + p.address + "</button>"+
+                 "</div>";
     });
     $('#scanList').html(content);
   }
 
   if(data.connList){
     content = "";
-    i = -1;
-    data.connList.forEach((p)=>{
+    data.connList.forEach((p,ii)=>{
       if(p.peripheral.localName === "Zikto-walk"){
-        content += "<div class='peri_conn' id=" + (++i) + ">" + p.peripheral.localName;
-        j=0;
-        p.cmds.forEach(c=>{
-          content += "<button class='btn_sendCmd' periid="+ i +" cmdid="+ (j++) +">"+ c +"</button>";
+        content += "<div class='peri_conn peri_conn"+ ii + "' id=" + ii + ">" + p.peripheral.localName+"<br><div class='btn-group'>";
+        p.cmds.forEach((c,j)=>{
+          content += "<button class='btn btn-primary btn_sendCmd' periid="+ ii +" cmdid="+ j +">"+ c +"</button>";
         });
-        content+="<br><br><div class='sensorData'></div>";
+        content+="</div><br><br><div class='sensorData'></div>";
         content += "</div>";
       }else{
-        content += "<div class='peri_conn' id=" + (++i) + ">" + p.peripheral.localName + "</div>";
+        content += "<div class='peri_conn' id=" + ii + ">" + p.peripheral.localName + "</div>";
       }
     });
     $('#connList').html(content);
@@ -100,7 +100,7 @@ function connSync(connList){
 function sampleData(connId){
   $.get("http://localhost:3001/data", {connId} ,function(data, status){
 
-    $($(".peri_conn")[0].children[5]).html(JSON.stringify(data));
+    $(".peri_conn0 .sensorData").html(JSON.stringify(data));
     if(conns[connId].is_sampling) setTimeout(()=>sampleData(connId), 100);
   });
 
