@@ -107,19 +107,30 @@ function connSync(connList){
 function sampleData(connId){
   $.get("http://localhost:3001/data", {connId} ,function(data, status){
 
-    if(rawDataCollection.accelx.length>100){
-      rawDataCollection.accelx = rawDataCollection.accelx.slice(1);
-      shift++;
+    for(d in data){
+      if(d.includes("accel")) rawDataCollection[d].push(data[d]);
     }
-    rawDataCollection.accelx.push(data.accelx);
-    let render = rawDataCollection.accelx.map((ele,i)=>[i+shift,ele]);
 
-    let drawOptions = {
+    let res =[];
+    let window = 20; // This should be somewhere in config.
+
+    if(rawDataCollection.accelx.length > window){
+      shift = rawDataCollection.accelx.length-window;
+      for (rd in rawDataCollection){
+        let tmp = rawDataCollection[rd].slice(-window);
+        res.push(tmp.map((el,i)=>[i+shift,el]));
+      }
+    }else{
+      for (rd in rawDataCollection){
+        res.push(rawDataCollection[rd].map((el,i)=>[i+shift,el]));
+      }
+    }
+
+    let plot = $.plot("#chart0",res,{
       yaxis:{min:-40, max:40},
       xaxis:{min:shift, show:true},
-    };
-    let plot = $.plot("#chart0",[render],drawOptions);
-    plot.setData([render]);
+    });
+    plot.setData(res);
     plot.draw();
 
     if(conns[connId].is_sampling) setTimeout(()=>sampleData(connId), 100);
