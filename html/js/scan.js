@@ -1,6 +1,11 @@
 
 let isScan;
 let conns = [];
+let rawDataCollection = {
+  accelx:[], accely:[], accelz:[],
+  gyrox:[], gyroy:[], gyroz:[],
+};
+let shift = 0;
 
 $( document ).ready(function() {
 
@@ -26,6 +31,8 @@ $(document).on('click','.btn_sendCmd',function(){
   });
   if($(this).text() === "startSampling"){
     conns[periId].is_sampling = true;
+    rawDataCollection.accelx = [];
+    shift=0;
     sampleData(periId);
   }
   if($(this).text() === "stopSampling"){
@@ -77,7 +84,7 @@ function renderPeripherals(data){
         p.cmds.forEach((c,j)=>{
           content += "<button class='btn btn-primary btn_sendCmd' periid="+ ii +" cmdid="+ j +">"+ c +"</button>";
         });
-        content+="</div><br><br><div class='sensorData'></div>";
+        content+="</div><br><br><div class='sensorData big-chart' id='chart"+ii+"'></div>";
         content += "</div>";
       }else{
         content += "<div class='peri_conn' id=" + ii + ">" + p.peripheral.localName + "</div>";
@@ -100,7 +107,21 @@ function connSync(connList){
 function sampleData(connId){
   $.get("http://localhost:3001/data", {connId} ,function(data, status){
 
-    $(".peri_conn0 .sensorData").html(JSON.stringify(data));
+    if(rawDataCollection.accelx.length>100){
+      rawDataCollection.accelx = rawDataCollection.accelx.slice(1);
+      shift++;
+    }
+    rawDataCollection.accelx.push(data.accelx);
+    let render = rawDataCollection.accelx.map((ele,i)=>[i+shift,ele]);
+
+    let drawOptions = {
+      yaxis:{min:-40, max:40},
+      xaxis:{min:shift, show:true},
+    };
+    let plot = $.plot("#chart0",[render],drawOptions);
+    plot.setData([render]);
+    plot.draw();
+
     if(conns[connId].is_sampling) setTimeout(()=>sampleData(connId), 100);
   });
 

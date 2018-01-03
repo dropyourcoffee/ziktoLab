@@ -6,6 +6,7 @@
 </head>
 
 <script src="/bower_components/jquery/dist/jquery.js"></script>
+<script src="/bower_components/flot/jquery.flot.js"></script>
 <script src="js/scan.js"></script>
 <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css">
 <link rel="stylesheet" href="css/style.css">
@@ -13,7 +14,7 @@
 <body>
 
 <div class="container-fluid">
-        <h3>Welcome To Zikto Lab!<br></h3>
+    <h3>Welcome To Zikto Lab!<br></h3>
 </div>
 
 <!-- Control Buttons -->
@@ -31,25 +32,27 @@
 <!-- Status, Peripherals, Connection List -->
 <div class="container">
     Status
-    <div class="row status">
-
-    </div>
+    <div class="row status"></div>
     <div class="row">
 
-    <!-- Left -->
-    <div class="col-xs-6">
-        ScanList
-        <div id=scanList></div>
-    </div>
-    <!-- Right -->
-    <div class="col-xs-6">
-        Connection List
-        <div id=connList></div>
-    </div>
+        <!-- Left -->
+        <div class="col-xs-6">
+            ScanList <div id=scanList></div>
+        </div>
+
+        <!-- Right -->
+        <div class="col-xs-6">
+            Connection List <div id=connList></div>
+        </div>
 
     </div>
 </div>
 
+<div class="container" >
+    <div class="col-xs col-xs-offset-3">
+        
+    </div>
 </div>
+
 </body>
 </html>
