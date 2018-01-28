@@ -4,6 +4,10 @@ const readline = require('readline');
 const ZiktoWalk = require("./device").ZiktoWalk;
 const asyncBLE = require("./ble-promise");
 const _ = require("lodash");
+const keyListen = require('events');
+
+keyListen.EventEmitter.prototype.setmaxListener = 2;
+
 
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
@@ -53,68 +57,70 @@ const getSensorData = function(connid){
 
 noble.on('stateChange', function(state) {
   Status = state;
-  process.stdin.on('keypress', async (str, key) => {
-    if (key.ctrl && key.name === 'c') {
-      process.exit();
-    } else {
+  //console.log(keyListen.listenerCount(process.stdin,"keypress")+" listeners");
+  if(!keyListen.listenerCount(process.stdin,"keypress")) {
+    process.stdin.on('keypress', async (str, key) => {
+      if (key.ctrl && key.name === 'c') {
+        process.exit();
+      } else {
 
-      switch(key.name){
-        case 's':
-          ScanList = [];
-          if (state === "poweredOn"){
-            noble.startScanning();
-            console.log("Scanning...");
+        switch (key.name) {
+          case 's':
+            ScanList = [];
+            if (state === "poweredOn") {
+              noble.startScanning();
+              console.log("Scanning...");
 
-          }else{
-            console.log("Not Powered On");
-          }
-          break;
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-          noble.stopScanning();
-          connectDevice(parseInt(key.name));
-          break;
-        case "x":
-          process.stdout.write("\nScanned List : [");
+            } else {
+              console.log("Not Powered On");
+            }
+            break;
+          case '0':
+          case '1':
+          case '2':
+          case '3':
+          case '4':
+          case '5':
+            noble.stopScanning();
+            connectDevice(parseInt(key.name));
+            break;
+          case "x":
+            process.stdout.write("\nScanned List : [");
 
-          ScanList.forEach((s)=>{
-            process.stdout.write(s.advertisement.localName+" ");
-          });
-          process.stdout.write("]");
-          break;
+            ScanList.forEach((s) => {
+              process.stdout.write(s.advertisement.localName + " ");
+            });
+            process.stdout.write("]");
+            break;
 
-        case "c":
-          process.stdout.write("\nConnected List : [");
+          case "c":
+            process.stdout.write("\nConnected List : [");
 
-          ConnList.forEach((c)=>{
-            process.stdout.write(c.deviceType+" ");
-          });
-          process.stdout.write("]");
-          break;
-        case "f": // FindMe
-          if(ConnList[0].deviceType==="Zikto-walk") ConnList[0].findMe();
-          break;
-        case "g": // Gait
-          if(ConnList[0].deviceType==="Zikto-walk") ConnList[0].startSampling();
-          break;
-        case "h":
-          if(ConnList[0].deviceType==="Zikto-walk") ConnList[0].stopSampling();
-          break;
-        case 'q':
-          process.exit();
-          break;
-        default:
-          console.log(key.name);
+            ConnList.forEach((c) => {
+              process.stdout.write(c.deviceType + " ");
+            });
+            process.stdout.write("]");
+            break;
+          case "f": // FindMe
+            if (ConnList[0].deviceType === "Zikto-walk") ConnList[0].findMe();
+            break;
+          case "g": // Gait
+            if (ConnList[0].deviceType === "Zikto-walk") ConnList[0].startSampling();
+            break;
+          case "h":
+            if (ConnList[0].deviceType === "Zikto-walk") ConnList[0].stopSampling();
+            break;
+          case 'q':
+            process.exit();
+            break;
+          default:
+            console.log(key.name);
 
+        }
       }
-    }
-  });
-  displayMenu();
-
+    });
+    displayMenu();
+  }
 });
 
 

@@ -16,7 +16,7 @@ app.set('view engine', 'jade');
 
 //app.use(bodyParser.json({limit: '50mb'}));
 //app.use(bodyParser.urlencoded({limit: '500mb',parameterLimit : 100000000000 ,extended: true}));
-app.use('/html',express.static('./html'));
+app.use('/',express.static('./html'));
 app.use('/libs',express.static('./libs'));
 
 app.use('/',routes);
