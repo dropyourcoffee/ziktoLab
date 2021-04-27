@@ -14,7 +14,7 @@ $( document ).ready(function() {
 
 $(document).on('click','.btn_conn',function(){
   $('.status').html("Connecting " + $("div.peri_scan")[this.id].innerText + "...");
-  $.get("http://localhost:3001/conn", {connId:this.id}, function(data){
+  $.get("/conn", {connId:this.id}, function(data){
 
     renderPeripherals(data);
     if(data.connList) connSync(data.connList);
@@ -26,7 +26,7 @@ $(document).on('click','.btn_conn',function(){
 $(document).on('click','.btn_sendCmd',function(){
 
   let periId = $(this).attr('periid');
-  $.get("http://localhost:3001/command", {periId, cmd:$(this).text()} ,function(data, status) {
+  $.get("/command", {periId, cmd:$(this).text()} ,function(data, status) {
     console.log(data);
   });
   if($(this).text() === "startSampling"){
@@ -52,7 +52,7 @@ function ajaxScan(){
 
 
 function doScan(){
-  $.get("http://localhost:3001/scan", {scan:isScan} ,function(data, status){
+  $.get("/scan", {scan:isScan} ,function(data, status){
 
     renderPeripherals(data);
     if(data.connList) connSync(data.connList);
@@ -105,7 +105,7 @@ function connSync(connList){
 }
 
 function sampleData(connId){
-  $.get("http://localhost:3001/data", {connId} ,function(data, status){
+  $.get("/data", {connId} ,function(data, status){
 
     for(d in data){
       if(d.includes("accel")) rawDataCollection[d].push(data[d]);

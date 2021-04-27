@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var app = require('../app');
+var app = require('../app/index');
 //var debug = require('debug')('vacuum_console:server');
 var http = require('http');
 
@@ -25,10 +25,13 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, "0.0.0.0");
 console.log("Server running on " + port + "...");
+console.log(1)
 server.on('error', onError);
+console.log(1)
 server.on('listening', onListening);
+console.log(1)
 
 /**
  * Normalize a port into a number, string, or false.

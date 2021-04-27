@@ -5,12 +5,12 @@ const ZiktoWalk = require("./device").ZiktoWalk;
 const asyncBLE = require("./ble-promise");
 const _ = require("lodash");
 const keyListen = require('events');
-
+console.log('middleware')
 keyListen.EventEmitter.prototype.setmaxListener = 2;
 
 
 readline.emitKeypressEvents(process.stdin);
-process.stdin.setRawMode(true);
+//process.stdin.setRawMode(true);
 
 
 let ScanList = [];
