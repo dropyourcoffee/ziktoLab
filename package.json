@@ -18,5 +18,18 @@
     "noble": "file:noble",
     "path": "^0.12.7",
     "promise": "^8.0.1"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "noble/"
+    ]
+  },
+  "quokka": {
+    "plugins": [
+      "./quokka_testrunner"
+    ]
   }
 }
