@@ -24,7 +24,7 @@ const ConnManager = (()=>{
 
   };
 
-  const getConnectedPeripherals = ()=>{
+  const getConnectedDevices = ()=>{
     return connList;
   };
 
@@ -54,22 +54,40 @@ const ConnManager = (()=>{
     clearInterval(scanning);
   };
 
+  const util = require("util");
+  const connect = (periph)=>{
+    return util.promisify(periph.connect);
+  }
+  // const connect = (peripheral)=>{
+  //
+  //   return new Promise((resolve,reject)=>{
+  //     process.stdout.write("\nConnecting " + peripheral.advertisement.localName + "...  ");
+  //     peripheral.connect((err)=>{
+  //
+  //       if(err) reject(err);
+  //
+  //       else{
+  //         console.log("Connected");
+  //         resolve(peripheral);
+  //       }
+  //
+  //     });
+  //   });
+  //
+  // };
+
   const init = ()=>{
     if(!instance)
       instance =  {
         isScanning,
-        status, getScannedPeripherals, getConnectedPeripherals, scan, stopScan, init, connectDevice
+        status, getScannedPeripherals, getConnectedDevices, scan, stopScan, init, connect
       };
     return instance;
-  }
-
-  const connectDevice = (id)=>{
-
   };
 
   return {
     init
-  }
+  };
 
 
 });
